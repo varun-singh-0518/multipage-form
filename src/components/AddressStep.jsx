@@ -1,9 +1,22 @@
-import {toast} from "react-toastify";
+import  { useEffect } from 'react';
+import { toast } from 'react-toastify';
 
-const AddressStep = ({formData, setFormData, next, prev}) => {
+const AddressStep = ({ formData, setFormData, next, prev }) => {
+  useEffect(() => {
+    // Retrieve data from local storage and set initial form data if available
+    const storedFormData = JSON.parse(localStorage.getItem('formData'));
+    if (storedFormData) {
+      setFormData(storedFormData);
+    }
+  }, []); // Empty dependency array ensures this effect runs only once on mount
+
   const handleChange = (e) => {
-    const {name, value} = e.target;
-    setFormData({...formData, [name]: value});
+    const { name, value } = e.target;
+    const updatedFormData = { ...formData, [name]: value };
+    setFormData(updatedFormData);
+
+    // Store updated form data in local storage
+    localStorage.setItem('formData', JSON.stringify(updatedFormData));
   };
 
   const isAlphabetic = (value) => /^[a-zA-Z]+$/.test(value);
@@ -12,12 +25,12 @@ const AddressStep = ({formData, setFormData, next, prev}) => {
     e.preventDefault();
 
     if (!isAlphabetic(formData.city.trim())) {
-      toast.error("City should contain only alphabets");
+      toast.error('City should contain only alphabets');
       return;
     }
 
-    if (!isAlphabetic(formData.country.trim())) {
-      toast.error("Country should contain only alphabets");
+    if (!isAlphabetic(formData.state.trim())) {
+      toast.error('State should contain only alphabets');
       return;
     }
 
@@ -29,22 +42,29 @@ const AddressStep = ({formData, setFormData, next, prev}) => {
       <h2 className="text-2xl font-bold mb-4">Step 2: Address</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            Address:
-          </label>
+          <label className="block text-gray-700 text-sm font-bold mb-2">Address Line 1:</label>
           <input
             type="text"
-            name="address"
-            value={formData.address}
+            name="address_1"
+            value={formData.address_1}
             onChange={handleChange}
             className="border border-gray-300 p-2 w-full rounded"
             required
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            City:
-          </label>
+          <label className="block text-gray-700 text-sm font-bold mb-2">Address Line 2:</label>
+          <input
+            type="text"
+            name="address_2"
+            value={formData.address_2}
+            onChange={handleChange}
+            className="border border-gray-300 p-2 w-full rounded"
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2">City:</label>
           <input
             type="text"
             name="city"
@@ -55,13 +75,22 @@ const AddressStep = ({formData, setFormData, next, prev}) => {
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            Country:
-          </label>
+          <label className="block text-gray-700 text-sm font-bold mb-2">State:</label>
           <input
             type="text"
-            name="country"
-            value={formData.country}
+            name="state"
+            value={formData.state}
+            onChange={handleChange}
+            className="border border-gray-300 p-2 w-full rounded"
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2">Zip Code:</label>
+          <input
+            type="text"
+            name="zipcode"
+            value={formData.zipcode}
             onChange={handleChange}
             className="border border-gray-300 p-2 w-full rounded"
             required
@@ -79,7 +108,7 @@ const AddressStep = ({formData, setFormData, next, prev}) => {
             type="submit"
             className="bg-zinc-400 text-white p-2 rounded hover:bg-zinc-700"
           >
-            Next
+            Submit
           </button>
         </div>
       </form>

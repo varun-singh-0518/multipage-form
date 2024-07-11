@@ -1,23 +1,34 @@
-// src/components/MultiStepForm.js
-import {useState} from "react";
-import PersonalDetailsStep from "./components/PersonalDetailsStep";
-import AddressStep from "./components/AddressStep";
-import PaymentDetailsStep from "./components/PaymentDetailStep";
-import ResultStep from "./components/ResultStep";
+import  { useState, useEffect } from 'react';
+import PersonalDetailsStep from './components/PersonalDetailsStep';
+import AddressStep from './components/AddressStep';
+import ResultStep from './components/ResultStep';
 
 const MultiStepForm = () => {
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phoneNo: "",
-    address: "",
-    city: "",
-    country: "",
-    cardNumber: "",
-    cvv: "",
+    name: '',
+    email: '',
+    phoneNo: '',
+    address_1: '',
+    address_2: '',
+    city: '',
+    state: '',
+    zipcode: ''
   });
 
   const [currentStep, setCurrentStep] = useState(1);
+
+  // Load form data from local storage on component mount
+  useEffect(() => {
+    const storedFormData = JSON.parse(localStorage.getItem('formData'));
+    if (storedFormData) {
+      setFormData(storedFormData);
+    }
+  }, []);
+
+  // Store form data to local storage whenever it updates
+  useEffect(() => {
+    localStorage.setItem('formData', JSON.stringify(formData));
+  }, [formData]);
 
   const nextStep = () => {
     setCurrentStep((prevStep) => prevStep + 1);
@@ -47,15 +58,6 @@ const MultiStepForm = () => {
           />
         );
       case 3:
-        return (
-          <PaymentDetailsStep
-            formData={formData}
-            setFormData={setFormData}
-            next={nextStep}
-            prev={prevStep}
-          />
-        );
-      case 4:
         return <ResultStep formData={formData} prev={prevStep} />;
       default:
         return null;
